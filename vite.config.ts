@@ -15,7 +15,10 @@ export default defineConfig(({ command }) => ({
     tsConfigPaths({ projects: ["./tsconfig.json"] }),
     tanstackStart({ server: { entry: "server" } }),
     viteReact(),
-    // Build a standalone Node server (.output/server/index.mjs) for Docker.
-    ...(command === "build" ? [nitro({ preset: "node-server" })] : []),
+    // Docker: standalone Node server (.output/server/index.mjs).
+    // Vercel: emit the Build Output API (.vercel/output) so no "dist" dir is needed.
+    ...(command === "build"
+      ? [nitro({ preset: process.env.VERCEL ? "vercel" : "node-server" })]
+      : []),
   ],
 }));
